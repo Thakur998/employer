@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employer Dashboard - Employee Training</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { background-color: #f4f4f4; color: #333; }
+  
+  header { background-color: #2b2b2b; color: #fff; padding: 15px 20px; font-size: 20px; }
+  
+  .container { padding: 20px; max-width: 1100px; margin: auto; }
+  
+  h2 { margin-bottom: 15px; }
+  
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  table th, table td { border: 1px solid #ccc; padding: 10px; text-align: left; vertical-align: top; }
+  table th { background-color: #3c3f41; color: #fff; }
+  
+  select, button { padding: 5px 10px; border-radius: 4px; border: 1px solid #ccc; }
+  button { background-color: #2b2b2b; color: #fff; cursor: pointer; transition: 0.2s; }
+  button:hover { background-color: #3c3f41; }
+
+  .status { margin-top: 10px; font-weight: bold; }
+
+  ul { list-style: disc; padding-left: 20px; margin: 0; }
+  ul li { margin-bottom: 5px; }
+
+  .assigned-course { display: flex; justify-content: space-between; align-items: center; background-color: #e0f0ff; padding: 5px 8px; margin-bottom: 5px; border-radius: 4px; }
+  .assigned-course span { font-size: 14px; }
+  .assigned-course button { background-color: #ff4d4d; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+  .assigned-course button:hover { background-color: #ff1a1a; }
+  .course-reason { font-size: 12px; color: #555; margin-left: 5px; }
+</style>
+</head>
+<body>
+
+<header>Employer Dashboard - Assign Training Courses</header>
+
+<div class="container">
+  <h2>Employee Performance & Training</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Employee Name</th>
+        <th>Marks</th>
+        <th>Suggested Topics</th>
+        <th>Assign Course</th>
+        <th>Assigned Courses</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="employees">
+      <tr>
+        <td>John Doe</td>
+        <td>7/10</td>
+        <td>
+          <ul>
+            <li>Software Engineering Principles</li>
+            <li>Debugging and Logic</li>
+          </ul>
+        </td>
+        <td>
+          <select>
+            <option value="https://www.coursera.org/learn/software-engineering-principles" data-reason="Improve understanding of software engineering concepts">Software Engineering Principles (Coursera)</option>
+            <option value="https://www.udemy.com/course/java-the-complete-java-developer-course/" data-reason="Enhance Java programming skills">Java Programming (Udemy)</option>
+            <option value="https://www.edx.org/course/programming-fundamentals" data-reason="Strengthen basic programming logic">Programming Fundamentals (edX)</option>
+          </select>
+        </td>
+        <td class="assigned-courses"></td>
+        <td><button onclick="assignCourse(this)">Assign</button></td>
+      </tr>
+      <tr>
+        <td>Jane Smith</td>
+        <td>4/10</td>
+        <td>
+          <ul>
+            <li>Basic Java Syntax</li>
+            <li>Arithmetic Operations</li>
+          </ul>
+        </td>
+        <td>
+          <select>
+            <option value="https://www.coursera.org/learn/software-engineering-principles" data-reason="Improve understanding of software engineering concepts">Software Engineering Principles (Coursera)</option>
+            <option value="https://www.udemy.com/course/java-the-complete-java-developer-course/" data-reason="Enhance Java programming skills">Java Programming (Udemy)</option>
+            <option value="https://www.edx.org/course/programming-fundamentals" data-reason="Strengthen basic programming logic">Programming Fundamentals (edX)</option>
+          </select>
+        </td>
+        <td class="assigned-courses"></td>
+        <td><button onclick="assignCourse(this)">Assign</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+// Employer assigns course
+function assignCourse(button) {
+  const row = button.closest('tr');
+  const employeeName = row.cells[0].textContent;
+  const select = row.cells[3].children[0];
+  const assignedCell = row.cells[4]; // Assigned Courses cell
+  const courseLink = select.value;
+  const courseText = select.options[select.selectedIndex].text;
+  const reason = select.options[select.selectedIndex].dataset.reason;
+
+  // Check for duplicates
+  const existingCourses = Array.from(assignedCell.querySelectorAll('.assigned-course span')).map(span => span.textContent);
+  if(existingCourses.includes(courseText)) {
+    document.getElementById('status').textContent = `${employeeName} already has "${courseText}" assigned.`;
+    return;
+  }
+
+  // Create assigned course element
+  const div = document.createElement('div');
+  div.classList.add('assigned-course');
+  div.innerHTML = `<span>${courseText}<span class="course-reason"> - ${reason}</span></span> <button onclick="removeCourse(this)">Remove</button>`;
+  assignedCell.appendChild(div);
+
+  // Update status
+  document.getElementById('status').textContent = `Course "${courseText}" assigned to ${employeeName}.`;
+}
+
+// Remove assigned course
+function removeCourse(button) {
+  const div = button.parentElement;
+  const courseName = div.querySelector('span').textContent.split(' - ')[0];
+  const employeeRow = div.closest('tr');
+  const employeeName = employeeRow.cells[0].textContent;
+  div.remove();
+  document.getElementById('status').textContent = `Course "${courseName}" removed from ${employeeName}.`;
+}
+</script>
+
+</body>
+</html>
